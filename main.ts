@@ -216,25 +216,17 @@ function unifiedEdits(lines: string[], strict: boolean): Edit[] {
       continue;
     }
     if (line.startsWith('--- ')) {
-      const inHeader = cur !== null && cur.hunks.length === 0 && !cur.sawMinusPlus;
       const nextIsPlus = i + 1 < lines.length && lines[i + 1]!.startsWith('+++ ');
-      if (inHeader) {
-        if (!nextIsPlus) throw new Exit2(`error: parse ${i + 2}`);
-        cur!.minusPath = parseUnifiedPath(line);
-        cur!.plusPath = parseUnifiedPath(lines[i + 1]!);
-        cur!.sawMinusPlus = true;
-        i += 2;
+      if (!nextIsPlus) {
+        if (cur !== null && cur.hunks.length === 0) throw new Exit2(`error: parse ${i + 2}`);
+        i += 1;
         continue;
       }
-      if (nextIsPlus) {
-        cur = newSection();
-        cur.minusPath = parseUnifiedPath(line);
-        cur.plusPath = parseUnifiedPath(lines[i + 1]!);
-        cur.sawMinusPlus = true;
-        i += 2;
-        continue;
-      }
-      i += 1;
+      if (cur === null || cur.hunks.length > 0 || cur.sawMinusPlus) cur = newSection();
+      cur.minusPath = parseUnifiedPath(line);
+      cur.plusPath = parseUnifiedPath(lines[i + 1]!);
+      cur.sawMinusPlus = true;
+      i += 2;
       continue;
     }
     if (line.startsWith('@@')) {
@@ -315,7 +307,7 @@ function unifiedEdits(lines: string[], strict: boolean): Edit[] {
         const atEnd = insertAt === file.lines.length;
         const rep = h.ops.filter((op) => op.kind === 'add').map((op) => op.text);
         file.lines.splice(insertAt, 0, ...rep);
-        if (atEnd) file.finalBreak = !lastNewNoNl;
+        if (atEnd && rep.length > 0) file.finalBreak = !lastNewNoNl;
         d += rep.length;
       }
     }
