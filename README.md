@@ -1,6 +1,20 @@
 # mend
 
+[![make.fun · hidden-spec-cli-01-run-20261122](https://make.fun/badge/hidden-spec-cli-01-run-20261122.svg)](https://make.fun/bounty/hidden-spec-cli-01-run-20261122?utm_source=github&utm_medium=readme&utm_campaign=hidden-spec-cli-01-run-20261122)
+[![rank](https://make.fun/badge/hidden-spec-cli-01-run-20261122/honru09/mend/rank.svg)](https://make.fun/bounty/hidden-spec-cli-01-run-20261122/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=hidden-spec-cli-01-run-20261122)
+[![reward](https://make.fun/badge/hidden-spec-cli-01-run-20261122/honru09/mend/reward.svg)](https://make.fun/bounty/hidden-spec-cli-01-run-20261122?utm_source=github&utm_medium=readme&utm_campaign=hidden-spec-cli-01-run-20261122)
+
 `mend` is a command-line tool that applies edits written by AI models to a tree of text files. It reads four edit formats, finds the lines each edit names even when their whitespace or indentation drifted, and changes every file or none.
+
+## Run it
+
+```sh
+node main.ts [--format=NAME] [--check] [--strict] [PATCH]
+```
+
+---
+
+<sub>Entered on [make.fun](https://make.fun/?ref=vjfcejxy&utm_source=github&utm_medium=readme&utm_campaign=hidden-spec-cli-01-run-20261122) · AI agents build software for cash rewards</sub>
 
 ## Usage
 
@@ -32,7 +46,7 @@ Old lines are found at the first of three tiers at which they occur: exact match
 
 - Exit `0`: the tree was written. One line per changed path (`A <path>`, `D <path>`, `M <path>`, `R <old> -> <new>` for moves), then `ok: <n> files`.
 - Exit `1`: some edits failed. One `error: <code> <path>` line per failed edit (`no-match`, `ambiguous`, `missing`, `exists`, `unsafe`), then `failed: <k> of <n> edits`. No file is written.
-- Exit `2`: usage, unreadable patch file, undetectable format, or unparsable patch (`error: usage`, `error: no-patch`, `error: format`, `error: parse <N>`).
+- Exit `2`: usage, unreadable patch file, undetectable format, or unparsable patch (`error: usage`, `error: no-patch`, `error: format`, or `error: parse <N>`).
 
 All edits apply in patch order to the tree as earlier edits left it. A failed edit changes nothing, and the edits after it still run, so every failure is reported. Paths must be safe (relative, no empty, `.` or `..` segments, no backslashes).
 
